@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="framework.postgresql.cmminq">
+
+    <select id="currentTime" resultType="java.lang.String">
+        /* currentTime */
+        SELECT TO_CHAR(
+                STATEMENT_TIMESTAMP()
+                , 'YYYY-MM-DD HH24:MI:SS'
+            )
+    </select>
+
+    <select id="queryCommonCodeList"
+        resultType="artxew.framework.layers.cmminq.dto.CommonCodeDto">
+        /* queryCommonCodeList */
+        SELECT CD_GRP AS cdGrp
+            , CDV AS cdv
+            , CDNM AS cdnm
+        FROM (
+            SELECT 'B' as CD_GRP
+                , 'BB' as CDV
+                , 'BBB' as CDNM
+            UNION
+            SELECT 'USR_AUTH', '01', 'ADMIN'
+            UNION
+            SELECT 'USR_AUTH' , '02' , 'USER'
+            UNION
+            SELECT 'USR_AUTH', '03', 'GUEST'
+            UNION
+            SELECT 'CRUD', 'C', 'CREATE'
+            UNION
+            SELECT 'CRUD', 'R', 'READ'
+            UNION
+            SELECT 'CRUD', 'U', 'UPDATE'
+            UNION
+            SELECT 'CRUD', 'D', 'DELETE'
+            UNION
+            SELECT 'Y', 'YY', 'YYY'
+        ) A
+        ORDER BY A.CD_GRP
+            , A.CDV
+    </select>
+
+</mapper>

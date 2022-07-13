@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.postgresql.example">
+
+    <select id="selectExampleListCount"
+        parameterType="artxew.project.layers.example.dto.req.QueryExampleListReqDto"
+        resultType="int">
+        /* selectExampleListCount */
+        SELECT count(*)
+        FROM EXAMPLE A
+    </select>
+    <select id="selectExampleList"
+        parameterType="artxew.project.layers.example.dto.req.QueryExampleListReqDto"
+        resultType="artxew.project.layers.example.dto.res.QueryExampleListResDto$QueryItem"
+        fetchSize="1000">
+        /* selectExampleList */
+        <include refid="framework.postgresql.common.pagingStart" />
+            SELECT EID AS eid
+                , TXT AS txt
+                , CRT_TM AS crtTm
+                , UDT_TM AS udtTm
+            FROM EXAMPLE A
+            ORDER BY EID DESC
+        <include refid="framework.postgresql.common.pagingEnd" />
+    </select>
+
+    <select id="selectExampleInfo"
+        parameterType="long"
+        resultType="artxew.project.layers.example.dto.res.QueryExampleInfoResDto">
+        /* selectExampleInfo */
+        SELECT EID AS eid
+            , TXT AS txt
+            , CRT_TM AS crtTm
+            , UDT_TM AS udtTm
+        FROM EXAMPLE A
+        WHERE A.EID = #{eid}
+    </select>
+
+    <insert id="insertExample"
+        parameterType="artxew.project.layers.example.dto.req.CreateExampleReqDto">
+        <selectKey resultType="long" keyProperty="eid" order="AFTER">
+            SELECT currval('sq_example__eid') AS eid
+        </selectKey>
+        /* insertExample */
+        INSERT INTO EXAMPLE (
+            TXT
+        ) VALUES (
+            #{txt}
+        )
+    </insert>
+
+    <update id="updateExample"
+        parameterType="artxew.project.layers.example.dto.req.ModifyExampleReqDto">
+        /* updateExample */
+        UPDATE EXAMPLE A SET
+            TXT = #{txt}
+            , UDT_TM = transaction_timestamp()
+        WHERE A.EID = #{eid}
+    </update>
+
+    <update id="deleteExample"
+        parameterType="long">
+        /* deleteExample */
+        DELETE FROM EXAMPLE A
+        WHERE A.EID = #{eid}
+    </update>
+
+</mapper>

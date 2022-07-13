@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" maxBytesLocalHeap="32M" updateCheck="false">
+
+    <diskStore path="java.io.tmpdir" />
+    
+    <sizeOfPolicy maxDepth="100000" maxDepthExceededBehavior="continue"/>
+
+    <defaultCache
+        diskExpiryThreadIntervalSeconds="0"
+        diskPersistent="false"
+        eternal="false"
+        memoryStoreEvictionPolicy="LRU"
+        overflowToDisk="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="0">
+    </defaultCache>
+
+    <cache name="queryCommonCodeList"
+        diskExpiryThreadIntervalSeconds="0"
+        diskPersistent="false"
+        eternal="false"
+        memoryStoreEvictionPolicy="LRU"
+        overflowToDisk="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="0">
+    </cache>
+
+</ehcache>

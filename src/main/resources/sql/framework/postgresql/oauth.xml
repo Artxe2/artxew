@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="framework.postgresql.oauth">
+
+    <select id="signIn"
+        parameterType="artxew.framework.layers.oauth.dto.req.SignInReqDto"
+        resultType="artxew.framework.layers.oauth.dto.res.QuerySessionResDto">
+        /* signIn */
+        SELECT #{usrId} AS usrId
+            , #{pwd} AS pwd
+            , '01,02,03' AS auth
+    </select>
+
+</mapper>

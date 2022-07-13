@@ -1,0 +1,41 @@
+spring:
+    banner:
+        location: classpath:banner
+    config:
+        import:
+            - classpath:arguments/environment-arguments.yml
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+        hikari:
+            auto-commit: false
+            connection-timeout: 20000
+            idle-timeout: 300000
+            minimum-idle: 5
+            maximum-pool-size: 12
+            max-lifetime: 120000
+    servlet:
+        multipart:
+            max-file-size: 50MB
+            max-request-size: 50MB
+jasypt:
+    encryptor:
+        bean: stringEncryptor
+logging:
+    config: classpath:config/logback/logback-config.xml
+server:
+    compression:
+        enabled: true
+        mime-types:
+            - application/javascript
+            - application/json
+            - text/css
+            - text/html
+            - text/javascript
+            - text/plain
+            - text/xml
+    error:
+        whitelabel:
+            enabled: false
+    tomcat:
+        keep-alive-timeout: 0

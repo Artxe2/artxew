@@ -1,0 +1,14 @@
+server:
+    port: 80
+spring:
+    datasource:
+        url: jdbc:log4jdbc:postgresql://132.226.23.193:5432/postgres?charSet=UTF-8
+        username: ENC(btyERT6xy7OwC7czaybR4xZBCh3gVRMo)
+        password: ENC(btyERT6xy7OwC7czaybR4xZBCh3gVRMo)
+    devtools:
+        livereload:
+            enabled: false
+    redis:
+        host: 132.226.23.193
+        password: ENC(ulWZJVataRT5Llz18hxb/Q==)
+        port: 6379

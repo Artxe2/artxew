@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="framework.postgresql.common">    
+    <sql id="pagingStart">SELECT ROW_NUMBER() OVER() AS rno, TB.* FROM (</sql>
+    <sql id="pagingEnd">) TB OFFSET (#{page} - 1) * #{size} LIMIT #{size}</sql>
+</mapper>

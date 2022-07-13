@@ -1,0 +1,53 @@
+artxew:
+    auth-check:
+        auth-with-jwt: false
+        accept-for-guest-uris: >
+            /swagger-
+            , /v2/api-docs
+            , /websocket-ui/index.html
+            , /api/oauth/sign-in
+    mail:
+        username: artxew.mail@gmail.com
+        password: ENC(vYIYEgCdoA3n6nHnjRTr33Euan5Gpe+SZJu9vZXAMlg=)
+        address: Artxew System <artxew.mail@gmail.com>
+---
+spring.config.activate.on-profile: dev
+artxew:
+    domain: http://132.226.23.193:8080
+    version: 0.3.7
+elastic:
+    ip: 132.226.23.193
+    port: 9200
+    protocol: http
+# ↖ on-profile: dev
+---
+spring.config.activate.on-profile: local
+artxew:
+    domain: http://localhost:80
+    version: 0.3.7
+elastic:
+    ip: 132.226.23.193
+    port: 9200
+    protocol: http
+# ↖ on-profile: local
+---
+spring.config.activate.on-profile: prod
+artxew:
+    domain: http://132.226.23.193:80
+    version: 0.3.7
+elastic:
+    ip: 132.226.23.193
+    port: 9200
+    protocol: http
+# ↖ on-profile: prod
+---
+spring.config.activate.on-profile: stg
+artxew:
+    domain: http://132.226.23.193:8081
+    version: 0.3.7
+elastic:
+    ip: 132.226.23.193
+    port: 9200
+    protocol: http
+# ↖ on-profile: stg
+---

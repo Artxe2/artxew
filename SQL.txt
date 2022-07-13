@@ -1,0 +1,240 @@
+SELECT
+	/* java dto -> */
+	'/**
+ *
+ * @programName	: '
+	|| REGEXP_REPLACE(
+		INITCAP(TABLE_NAME), '_', '', 'gi'
+	)
+	|| 'Dto
+ * @author		: authorId
+ * @description : '
+	|| TABLE_COMMENT
+	|| ' 객체
+ */
+@Data
+public class '
+	|| REGEXP_REPLACE(
+		INITCAP(TABLE_NAME), '_', '', 'gi'
+	)
+	|| 'Dto {
+'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG(
+			'
+	@Schema(description = "'
+			|| COLUMN_COMMENT
+			|| '", example = "'
+			|| EXAMPLE
+			|| '", maxLength = '
+			|| LENGTH
+			|| TYPE
+			|| CAMEL_CASE
+			|| ';'
+		)
+		, '
+'
+	)
+	|| '
+
+	@JsonIgnore
+	@Schema(description = "세션유저아이디", example = "sessionUserId", maxLength = 20)
+	private String intgUserId;
+}' AS JAVA_DTO
+	,
+	/* mybatis select query -> */
+	'SELECT A.'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG(
+			UPPER(COLUMN_NAME)
+		)
+		, '
+	, A.'
+	)
+	|| '
+FROM '
+	|| UPPER(TABLE_NAME)
+	|| ' A /* '
+	|| TABLE_COMMENT
+	|| ' */
+WHERE A.'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG((
+			SELECT UPPER(COLUMN_NAME)
+				|| ' = #{'
+				|| CAMEL_CASE
+				|| '}'
+			WHERE IS_PK
+		))
+		, '
+AND A.'
+	) AS MYBATIS_SELECT_QUERY
+	,
+	/* mybatis insert query -> */
+	'INSERT INTO '
+	|| UPPER(TABLE_NAME)
+	|| ' ( /* '
+	|| TABLE_COMMENT
+	|| ' */
+	'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG(
+			UPPER(COLUMN_NAME)
+		)
+		, '
+	, '
+	)
+	|| '
+) VALUES (
+	#{'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG(CAMEL_CASE)
+		, '}
+	, #{'
+	)
+	|| '}
+)' AS MYBATIS_INSERT_QUERY
+	,
+	/* mybatis update query -> */
+	'UPDATE '
+	|| UPPER(TABLE_NAME)
+	|| ' A SET /* '
+	|| TABLE_COMMENT
+	|| ' */
+	'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG(
+			UPPER(COLUMN_NAME)
+			|| ' = #{'
+			|| CAMEL_CASE
+			|| '}'
+		)
+		, '
+	, '
+	)
+	|| '
+WHERE A.'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG((
+			SELECT UPPER(COLUMN_NAME)
+				|| ' = #{'
+				|| CAMEL_CASE
+				|| '}'
+			WHERE IS_PK
+		))
+		, '
+AND A.'
+	) AS MYBATIS_UPDATE_QUERY
+	,
+	/* mybatis update if query -> */
+	'UPDATE '
+	|| UPPER(TABLE_NAME)
+	|| ' A SET /* '
+	|| TABLE_COMMENT
+	|| ' */
+	'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG(
+			'<if test='''
+			|| CAMEL_CASE
+			|| ' != null''>, '
+			|| UPPER(COLUMN_NAME)
+			|| ' = #{'
+			|| CAMEL_CASE
+			|| '}</if>'
+		)
+		, '
+	, '
+	)
+	|| '
+WHERE A.'
+	|| ARRAY_TO_STRING(
+		ARRAY_AGG((
+			SELECT UPPER(COLUMN_NAME)
+				|| ' = #{'
+				|| CAMEL_CASE
+				|| '}'
+			WHERE IS_PK
+		))
+		, '
+AND A.'
+	) AS MYBATIS_UPDATE_IF_QUERY
+FROM (
+	SELECT B.TABLE_NAME
+		, OBJ_DESCRIPTION(A.RELID) AS TABLE_COMMENT
+		, C.ATTNAME AS COLUMN_NAME
+		, COL_DESCRIPTION(C.ATTRELID, C.ATTNUM) AS COLUMN_COMMENT
+		, SUBSTRING(C.ATTNAME, 1, 1)
+		|| SUBSTRING(
+			REGEXP_REPLACE(
+				INITCAP(C.ATTNAME), '_', '', 'gi'
+			)
+			, 2
+		) AS CAMEL_CASE
+		, COALESCE(
+			COALESCE(B.CHARACTER_MAXIMUM_LENGTH, B.NUMERIC_PRECISION)
+			, CASE WHEN B.DATA_TYPE = 'text' THEN 4000 ELSE 20 END
+		) AS LENGTH
+		,  CASE WHEN B.DATA_TYPE = 'date' THEN TO_CHAR(NOW(), 'YYYY-MM-DD')
+				WHEN B.DATA_TYPE = 'timestamp without time zone' THEN TO_CHAR(NOW(), 'YYYY-MM-DD HH24:MI:SS')
+				ELSE COALESCE(
+					D.VALUE
+					, CASE WHEN B.NUMERIC_PRECISION IS NULL THEN 'ASDF'
+						WHEN NUMERIC_SCALE > 0 THEN '1234.5'
+						ELSE '1234' END
+				) END AS EXAMPLE
+		,  CASE WHEN B.NUMERIC_PRECISION IS NULL AND B.IS_NULLABLE = 'YES' THEN ')
+	private String '
+				WHEN B.NUMERIC_PRECISION IS NULL AND B.IS_NULLABLE = 'NO' THEN ')
+	@NotEmpty
+	private String '
+				WHEN B.NUMERIC_SCALE > 0 AND B.IS_NULLABLE = 'YES' THEN ')
+	private Double '
+				WHEN B.NUMERIC_SCALE > 0 AND B.IS_NULLABLE = 'NO' THEN ')
+	@NotNull
+	private Double '
+				WHEN B.NUMERIC_PRECISION > 8 AND B.IS_NULLABLE = 'YES' THEN ')
+	private Long '
+				WHEN B.NUMERIC_PRECISION > 8 AND B.IS_NULLABLE = 'NO' THEN ')
+	@NotNull
+	private Long '
+				WHEN B.IS_NULLABLE = 'YES' THEN ')
+	private Integer '
+				WHEN B.IS_NULLABLE = 'NO' THEN ')
+	@NotNull
+	private Integer '
+			END AS TYPE
+		, (
+			SELECT COUNT(*) > 0
+			FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS Z
+			INNER JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE Y
+				ON Z.TABLE_SCHEMA = Y.TABLE_SCHEMA
+				AND Z.TABLE_NAME = Y.TABLE_NAME
+				AND Z.CONSTRAINT_NAME = Y.CONSTRAINT_NAME
+			WHERE Z.CONSTRAINT_TYPE = 'PRIMARY KEY'
+			AND Z.TABLE_NAME = A.RELNAME
+			AND Y.COLUMN_NAME = C.ATTNAME
+		) AS IS_PK
+	FROM PG_STAT_ALL_TABLES A
+	INNER JOIN INFORMATION_SCHEMA.COLUMNS B
+		ON B.TABLE_NAME = A.RELNAME
+	INNER JOIN PG_ATTRIBUTE C
+		ON A.RELID = C.ATTRELID
+		AND B.ORDINAL_POSITION = C.ATTNUM
+	LEFT OUTER JOIN (
+		SELECT KEY
+			, VALUE
+		FROM JSON_EACH_TEXT((
+			SELECT ROW_TO_JSON(Z.*)
+			FROM ${tableName} Z /* 테이블명 */
+--			WHERE Z.${pkName} = ${pk} /* PK */
+			LIMIT 1
+		)::JSON)
+	) D
+		ON C.ATTNAME = D.KEY
+	WHERE A.SCHEMANAME ILIKE 'PUBLIC' /* 스키마명 */
+	AND B.TABLE_NAME ILIKE '${tableName}' /* 테이블명 */
+	ORDER BY C.ATTNUM
+) VIEW
+GROUP BY TABLE_NAME
+	, TABLE_COMMENT
