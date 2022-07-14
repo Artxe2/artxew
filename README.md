@@ -3,6 +3,8 @@
 
 [http://132.226.23.193:8080/swagger-ui/index.html[profile=dev]](http://132.226.23.193:8080/swagger-ui/index.html)
 
+[http://132.226.23.193:8080/websocket-ui/index.html[profile=dev]](http://132.226.23.193:8080/websocket-ui/index.html)
+
 ## Environment
 > VsCode 1.68.0
 >> Extension Pack for Java
