@@ -1,0 +1,64 @@
+artxew:
+  auth-check:
+    public-uris: >
+      OPTIONS:/
+      , GET:/api/auth/kcb/exec
+      , GET:/api/auth/id/
+      , GET:/api/cm-cd/
+      , GET:/api/example
+      , GET:/api/game/
+      , GET:/api/game-bbrd/hot
+      , GET:/api/hook/
+      , GET:/error
+      , GET:/image/
+      , GET:/public/
+      , GET:/swagger-
+      , GET:/v3/api-docs
+      , GET:/websocket-ui/index.html
+      , POST:/api/auth/
+      , POST:/api/hook/
+  image-exts: >
+    jpeg
+    , jpg
+    , png
+  mail:
+    address: admin@artxew.com
+    host: smtp.gmail.com
+    password: ENC(vYIYEgCdoA3n6nHnjRTr33Euan5Gpe+SZJu9vZXAMlg=)
+    personal: Artxew
+    port: 587
+    username: artxew.mail@gmail.com
+  use:
+    elastic: true
+    websocket: true
+  version: 2024-01-15
+---
+spring.config.activate.on-profile: local
+artxew:
+  domain: http://127.0.0.1
+  file:
+    chat: D:\\workspace_vscode\\artxew\\files\\chat
+    image: D:\\workspace_vscode\\artxew\\files\\image
+    root: D:\\workspace_vscode\\artxew\\files
+  ip: 127.0.0.1
+elastic:
+  ip: 127.0.0.1
+  port: 9200
+  protocol: http
+# ↖ on-profile: local
+---
+---
+spring.config.activate.on-profile: prod
+artxew:
+  domain: http://127.0.0.1
+  file:
+    chat: D:\\workspace_vscode\\artxew\\files\\chat
+    image: D:\\workspace_vscode\\artxew\\files\\image
+    root: D:\\workspace_vscode\\artxew\\files
+  ip: 127.0.0.1
+elastic:
+  ip: 127.0.0.1
+  port: 9200
+  protocol: http
+# ↖ on-profile: prod
+---

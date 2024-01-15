@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artxew.framework.layers.dmn">
+
+	<insert id="createList_Dmn"
+		parameterType="CreateList_Dmn_ReqDto">
+		/* createList_Dmn */
+		INSERT INTO TB_DMN (
+			ABR
+			, ENG_NM
+			, HG_NM
+		)
+		<foreach item="item" collection="items" separator="UNION ALL">
+		SELECT #{item.abr}, #{item.engNm}, #{item.hgNm}
+		</foreach>
+	</insert>
+
+	<insert id="modifyHgNm_Dmn"
+		parameterType="ModifyHgNm_Dmn_ReqDto">
+		/* modifyHgNm_Dmn */
+		UPDATE TB_DMN A SET
+			A.HG_NM = #{hgNm}
+		WHERE A.ABR = #{abr}
+	</insert>
+
+	<select id="queryList_Dmn"
+		parameterType="QueryList_Dmn_ReqDto"
+		resultType="artxew.framework.layers.dmn.dto.res.QueryList_Dmn_ResDto$QueryItem">
+		/* queryList_Dmn */
+		SELECT A.ABR AS abr
+			, A.ENG_NM AS engNm
+			, A.HG_NM AS hgNm
+		FROM TB_DMN A
+		<where>
+			<if test='abr != null and abr != ""'>
+		AND A.ABR = #{abr}
+			</if>
+			<if test='engNm != null and engNm != ""'>
+		AND A.ENG_NM LIKE concat('%', #{engNm}, '%')
+			</if>
+			<if test='hgNm != null and hgNm != ""'>
+		AND A.HG_NM LIKE concat('%', #{hgNm}, '%')
+			</if>
+		</where>
+	</select>
+
+</mapper>

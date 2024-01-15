@@ -1,0 +1,15 @@
+server:
+  port: 80
+spring:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  datasource-command:
+    jdbc-url: jdbc:log4jdbc:mariadb://127.0.0.1:3306/artxew?serverTimezone=Asia/Seoul&useSSL=false
+    password: ENC(B/WbF9m6riBzMBFGX8I2wg==)
+    username: artxew
+  datasource-query:
+    jdbc-url: jdbc:log4jdbc:mariadb://127.0.0.1:3306/artxew?serverTimezone=Asia/Seoul&useSSL=false
+    password: ENC(B/WbF9m6riBzMBFGX8I2wg==)
+    username: artxew

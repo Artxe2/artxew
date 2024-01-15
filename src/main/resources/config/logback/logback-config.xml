@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration>
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss}《 %msg 》》%highlight(%-5level)|%cyan(%class{0}):%line %n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator class="artxew.config.logback.SecretSqlEvaluator" />
+			<OnMismatch>NEUTRAL</OnMismatch>
+			<OnMatch>DENY</OnMatch>
+		</filter>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss}《 %msg 》》%highlight(%-5level)|%cyan(%-1.100logger):%line %n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator class="artxew.config.logback.SecretSqlEvaluator" />
+			<OnMismatch>NEUTRAL</OnMismatch>
+			<OnMatch>DENY</OnMatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>/usr/logs/artxew/artxew_log_%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+			<maxFileSize>1GB</maxFileSize>
+		</rollingPolicy>
+	</appender>
+
+	<logger name="com.ulisesbocchio.jasyptspringboot.EncryptablePropertySourceConverter" level="OFF" />
+	<logger name="com.ulisesbocchio.jasyptspringboot.caching.CachingDelegateEncryptablePropertySource" level="OFF" />
+	<logger name="com.ulisesbocchio.jasyptspringboot.caching.RefreshScopeRefreshedEventListener" level="OFF" />
+	<logger name="com.ulisesbocchio.jasyptspringboot.configuration.EnableEncryptablePropertiesBeanFactoryPostProcessor" level="OFF" />
+	<logger name="com.ulisesbocchio.jasyptspringboot.detector.DefaultLazyPropertyDetector" level="OFF" />
+	<logger name="com.ulisesbocchio.jasyptspringboot.encryptor.DefaultLazyEncryptor" level="OFF" />
+	<logger name="com.ulisesbocchio.jasyptspringboot.filter.DefaultLazyPropertyFilter" level="OFF" />
+	<logger name="com.ulisesbocchio.jasyptspringboot.resolver.DefaultLazyPropertyResolver" level="OFF" />
+	<logger name="com.zaxxer.hikari.HikariConfig" level="OFF" />
+	<logger name="com.zaxxer.hikari.HikariDataSource" level="OFF" />
+	<logger name="net.sf.ehcache.pool.impl.DefaultSizeOfEngine" level="OFF" />
+	<logger name="net.sf.ehcache.pool.sizeof.AgentLoader" level="OFF" />
+	<logger name="net.sf.ehcache.pool.sizeof.JvmInformation" level="OFF" />
+	<logger name="net.sf.ehcache.pool.sizeof.filter.AnnotationSizeOfFilter" level="OFF" />
+	<logger name="org.apache.catalina.core.StandardService" level="OFF" />
+	<logger name="org.apache.coyote.http11.Http11NioProtocol" level="OFF" />
+	<logger name="org.mybatis.spring.mapper.ClassPathMapperScanner" level="OFF" />
+	<logger name="org.springframework.boot.devtools.autoconfigure.ConditionEvaluationDeltaLoggingListener" level="OFF" />
+	<logger name="org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor" level="OFF" />
+	<logger name="org.springframework.core.LocalVariableTableParameterNameDiscoverer" level="OFF" />
+	<logger name="org.springframework.data.repository.config.RepositoryConfigurationDelegate" level="OFF" />
+	<logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="OFF" />
+	<logger name="org.springframework.web.servlet.DispatcherServlet" level="OFF" />
+	<logger name="org.springframework.web.servlet.PageNotFound" level="OFF" />
+	<logger name="jdbc" level="OFF" />
+	<logger name="jdbc.sqlonly" level="OFF" />
+	<logger name="jdbc.sqltiming" level="OFF" />
+	<logger name="jdbc.audit" level="OFF" />
+	<logger name="jdbc.resultset" level="OFF" />
+	<logger name="jdbc.resultsettable" level="OFF" />
+	<logger name="jdbc.connection" level="OFF" />
+
+	<springProfile name="local">
+		<logger name="jdbc.sqltiming" level="INFO" />
+		<root level="INFO">
+			<appender-ref ref="CONSOLE" />
+		</root>
+	</springProfile>
+
+	<springProfile name="prod">
+		<logger name="jdbc.sqltiming" level="INFO" />
+		<root level="INFO">
+			<appender-ref ref="FILE" />
+		</root>
+	</springProfile>
+
+</configuration>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artxew.project.layers.chat">
+
+	<insert id="create_Chat"
+		parameterType="Create_Chat_ReqDto">
+		<selectKey resultType="long" keyProperty="sno" order="AFTER">
+			SELECT last_insert_id() AS sno
+		</selectKey>
+		/* create_Chat */
+		INSERT INTO tb_chat (
+			NM
+		) VALUES (
+			#{nm}
+		)
+	</insert>
+
+	<insert id="create_ChatBlck"
+		parameterType="Create_ChatBlck_ReqDto">
+		/* create_ChatBlck */
+		INSERT INTO TB_CHAT_BLCK (
+			REQ_USER_NO
+			, BLCK_USER_NO
+			, CHAT_NO
+			, BLCK_RSN
+		)
+		SELECT #{reqUserNo}
+			, #{blckUserNo}
+			, A.SNO
+			, #{blckRsn}
+		FROM TB_CHAT A
+		WHERE A.SNO = #{chatNo}
+	</insert>
+
+	<insert id="createList_ChatJoin"
+		parameterType="Create_Chat_ReqDto">
+		/* create_ChatJoin */
+		INSERT INTO tb_chat_join (
+			CHAT_NO
+			, USER_NO
+		) VALUES
+			(#{sno}, #{userNo})
+		<if test='itltList != null'>
+			<foreach item="no" collection="itltList">, (#{sno}, #{no})
+			</foreach>
+		</if>
+	</insert>
+
+	<insert id="delete_ChatBlck"
+		parameterType="Delete_ChatBlck_ReqDto">
+		/* delete_ChatBlck */
+		DELETE FROM TB_CHAT_BLCK
+		WHERE REQ_USER_NO = #{reqUserNo}
+		AND BLCK_USER_NO = #{blckUserNo}
+	</insert>
+
+	<update id="markRead_Chat"
+		parameterType="MarkRead_Chat_ReqDto">
+		/* markRead_Chat */
+		UPDATE TB_CHAT_JOIN A SET
+			A.READ_TIME = current_timestamp()
+		WHERE A.CHAT_NO = #{chatNo}
+		AND A.USER_NO = #{userNo}
+	</update>
+
+	<update id="markWrite_Chat"
+		parameterType="MarkWrite_Chat_ReqDto">
+		/* markWrite_Chat */
+		UPDATE TB_CHAT A
+			INNER JOIN TB_CHAT_JOIN B
+				ON A.SNO = B.CHAT_NO SET
+			A.LAST_CHAT = #{lastChat}
+			, B.READ_TIME = current_timestamp()
+		WHERE A.SNO = #{chatNo}
+		AND B.USER_NO = #{userNo}
+	</update>
+
+	<select id="queryListCnt_Chat"
+		parameterType="QueryList_Chat_ReqDto"
+		resultType="int">
+		/* queryListCnt_Chat */
+		SELECT count(*)
+		FROM TB_CHAT A
+		INNER JOIN TB_CHAT_JOIN B
+			ON A.SNO = B.CHAT_NO
+		WHERE B.USER_NO = #{userNo}
+	</select>
+
+	<select id="queryListCnt_ChatBlck"
+		parameterType="QueryList_ChatBlck_ReqDto"
+		resultType="int">
+		/* queryListCnt_ChatBlck */
+		SELECT count(*)
+		FROM TB_CHAT_BLCK A
+		WHERE TRUE
+		<if test='reqUserNo != null'>
+		AND A.REQ_USER_NO = #{reqUserNo}
+		</if>
+		<if test='blckUserNo != null'>
+		AND A.BLCK_USER_NO = #{blckUserNo}
+		</if>
+	</select>
+
+	<select id="queryList_Chat"
+		parameterType="QueryList_Chat_ReqDto"
+		resultType="artxew.project.layers.chat.dto.res.QueryList_Chat_ResDto$QueryItem"
+		fetchSize="100">
+		/* queryList_Chat */
+		SELECT A.SNO AS sno
+			, ifnull(
+				A.NM
+				, (
+					SELECT (
+							SELECT Y.NM
+							FROM TB_USER Y
+							WHERE Y.SNO = Z.USER_NO
+						)
+					FROM TB_CHAT_JOIN Z
+					WHERE Z.CHAT_NO = A.SNO
+					AND Z.USER_NO != B.USER_NO
+					LIMIT 1
+				)
+			) AS nm
+			, A.LAST_CHAT AS lastChat
+			, unix_timestamp(A.MOD_DT) * 1000 AS modDt
+			, unix_timestamp(B.READ_TIME) * 1000 AS readTime
+			, (
+				SELECT group_concat(Z.USER_NO)
+				FROM TB_CHAT_JOIN Z
+				WHERE Z.CHAT_NO = A.SNO
+			) AS joinList
+		FROM TB_CHAT A
+		INNER JOIN TB_CHAT_JOIN B
+			ON A.SNO = B.CHAT_NO
+		WHERE B.USER_NO = #{userNo}
+		ORDER BY A.MOD_DT DESC
+	</select>
+
+	<select id="queryList_ChatBlck"
+		parameterType="QueryList_ChatBlck_ReqDto"
+		resultType="artxew.project.layers.chat.dto.res.QueryList_ChatBlck_ResDto$QueryItem"
+		fetchSize="100">
+		/* queryList_ChatBlck */
+		SELECT A.REQ_USER_NO AS reqUserNo
+			, A.BLCK_USER_NO AS blckUserNo
+			, A.CHAT_NO AS chatNo
+			, A.BLCK_RSN AS blckRsn
+			, date_format(A.REG_DT,'%Y-%m-%d %H:%i:%s') AS regDt
+		FROM TB_CHAT_BLCK A
+		WHERE TRUE
+		<if test='reqUserNo != null'>
+		AND A.REQ_USER_NO = #{reqUserNo}
+		</if>
+		<if test='blckUserNo != null'>
+		AND A.BLCK_USER_NO = #{blckUserNo}
+		</if>
+		ORDER BY A.REG_DT DESC
+	</select>
+
+	<select id="queryList_ChatJoin"
+		parameterType="long"
+		resultType="artxew.project.layers.chat.dto.res.Query_Chat_ResDto$JoinUser"
+		fetchSize="100">
+		/* queryList_ChatBlck */
+		SELECT A.USER_NO AS userNo
+			, unix_timestamp(A.READ_TIME) * 1000 AS readTime
+			, B.ID AS userId
+			, B.NM AS userNm
+		FROM TB_CHAT_JOIN A
+		INNER JOIN TB_USER B
+			ON A.USER_NO = B.SNO
+		WHERE A.CHAT_NO = #{value}
+		ORDER BY A.REG_DT ASC
+	</select>
+
+	<select id="queryNewList_Chat"
+		parameterType="java.util.List"
+		resultType="QueryNewList_Chat_ResDto"
+		fetchSize="1000">
+		/* queryNewList_Chat */
+		SELECT USER_NO AS userNo
+			, group_concat(B.SNO) AS chatList
+		FROM TB_CHAT_JOIN A
+		INNER JOIN TB_CHAT B
+			ON A.CHAT_NO = B.SNO
+		WHERE B.MOD_DT > A.READ_TIME
+		AND A.USER_NO IN (
+			<foreach item="no" collection="list" separator=",">#{no}</foreach>
+		)
+		GROUP BY A.USER_NO
+	</select>
+
+	<select id="query_Chat"
+		parameterType="Query_Chat_ReqDto"
+		resultType="Query_Chat_ResDto">
+		/* query_Chat */
+		SELECT A.SNO AS sno
+			, A.NM AS nm
+			, A.LAST_CHAT AS lastChat
+			, unix_timestamp(A.MOD_DT) AS modDt
+		FROM TB_CHAT A
+		INNER JOIN TB_CHAT_JOIN B
+			ON A.SNO = B.CHAT_NO
+		WHERE A.SNO = #{chatNo}
+		AND B.USER_NO = #{userNo}
+	</select>
+
+</mapper>

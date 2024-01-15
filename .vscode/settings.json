@@ -1,0 +1,16 @@
+{
+	"java.compile.nullAnalysis.mode": "automatic",
+	"java.configuration.updateBuildConfiguration": "automatic",
+	"java.debug.settings.onBuildFailureProceed": true,
+	"java.project.sourcePaths": [
+		"src"
+	],
+	// "java.configuration.runtimes": [
+	// 	{
+	// 		"name": "JavaSE-21",
+	// 		"default": true,
+	// 		"path": "/usr/lib/jdk-21.0.1+12"
+	// 	}
+	// ],
+	// "java.jdt.ls.java.home": "/usr/lib/jdk-21.0.1+12"
+}

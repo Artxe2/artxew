@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artxew.project.layers.menu">
+
+	<delete id="deleteAll_Menu">
+		/* deleteAll_Menu */
+		DELETE FROM TB_MENU
+	</delete>
+
+	<delete id="deleteAll_MenuRole">
+		/* deleteAll_MenuRole */
+		DELETE FROM TB_MENU_ROLE
+	</delete>
+
+	<select id="queryList_Menu"
+		parameterType="java.lang.String"
+		resultType="artxew.project.layers.menu.dto.res.QueryList_Menu_ResDto$QueryItem"
+		fetchSize="100">
+		/* queryList_Menu */
+		WITH RECURSIVE MENU AS (
+			SELECT A.*
+			FROM TB_MENU A
+			INNER JOIN TB_MENU_ROLE B
+				ON A.SNO = B.MENU_NO
+			WHERE A.PRNT_MENU_NO IS NULL
+			AND B.ROLE_CD IN (
+				<foreach item="cd" collection="array" separator=",">#{cd}</foreach>
+			)
+			UNION ALL
+			SELECT A.*
+			FROM TB_MENU A
+			INNER JOIN TB_MENU_ROLE B
+				ON A.SNO = B.MENU_NO
+			INNER JOIN MENU C
+				ON A.PRNT_MENU_NO = C.SNO
+			WHERE B.ROLE_CD IN (
+				<foreach item="cd" collection="array" separator=",">#{cd}</foreach>
+			)
+		)
+		SELECT SNO AS sno
+			, A.PRNT_MENU_NO AS prntMenuNo
+			, A.NM AS nm
+			, A.EXPL AS expl
+			, A.URL AS url
+		FROM MENU A
+		ORDER BY A.SNO
+	</select>
+
+	<insert id="replaceAll_Menu"
+		parameterType="ReplaceAll_Menu_ReqDto">
+		/* replaceAll_Menu */
+		INSERT INTO TB_MENU (
+			SNO
+			, PRNT_MENU_NO
+			, NM
+			, EXPL
+			, URL
+		) VALUES
+		<foreach item="item" collection="data" separator=",">(
+			#{item.sno}
+			, #{item.prntMenuNo}
+			, #{item.nm}
+			, #{item.expl}
+			, #{item.url}
+		)</foreach>
+	</insert>
+
+	<insert id="replaceAll_MenuRole"
+		parameterType="ReplaceAll_Menu_ReqDto">
+		/* replaceAll_MenuRole */
+		INSERT INTO TB_MENU_ROLE (
+			MENU_NO
+			, ROLE_CD
+		)
+		SELECT 0, '' WHERE FALSE
+		<foreach item="item" collection="data">
+			<if test='item.roleList != null'>
+				<foreach item="role" collection="item.roleList">
+		UNION ALL SELECT #{item.sno}, #{role.code}</foreach>
+			</if>
+		</foreach>
+	</insert>
+
+</mapper>

@@ -1,0 +1,27 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "java",
+			"name": "BootApplication",
+			"request": "launch",
+			"mainClass": "artxew.boot.BootApplication",
+			"projectName": "artxew",
+			"vmArgs": [
+				"-Xmx4g",
+				"-Xms2g",
+				"-Dspring.profiles.active=local",
+				// "-Dspring.profiles.active=prod",
+				"-Denvironment.password=artxew-enc-key",
+				"-XX:+ZGenerational",
+				"-XX:+UseZGC",
+				"--add-opens",
+				"java.base/java.lang=ALL-UNNAMED",
+				"--add-opens",
+				"java.base/java.util=ALL-UNNAMED",
+				"-Dfile.encoding=COMPAT",
+				"-Djava.net.preferIPv4Stack=true"
+			]
+		}
+	]
+}

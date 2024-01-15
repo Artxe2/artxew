@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artxew.framework.layers.cmcd">
+
+	<select id="queryList_CmCd"
+		resultType="artxew.framework.layers.cmcd.dto.res.QueryList_CmCd_ResDto$QueryItem"
+		fetchSize="10">
+		/* queryList_CmCd */
+		SELECT A.GRP_CD AS grpCd
+			, A.CD AS cd
+			, A.NM AS nm
+		FROM TB_CM_CD A
+		ORDER BY grpCd, cd
+	</select>
+
+</mapper>

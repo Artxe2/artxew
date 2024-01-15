@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artxew.framework.layers.role">
+
+	<insert id="create_UserRole"
+		parameterType="Create_UserRole_ReqDto">
+		/* create_UserRole */
+		INSERT INTO TB_USER_ROLE (
+			USER_NO
+			, ROLE_CD
+		)
+		SELECT A.SNO
+			, #{roleCd}
+		FROM TB_USER A
+		WHERE A.WDRW_DT IS NULL
+		AND A.SNO = #{userNo}
+	</insert>
+
+	<delete id="delete_UserRole"
+		parameterType="Create_UserRole_ReqDto">
+		/* delete_UserRole */
+		DELETE FROM TB_USER_ROLE
+		WHERE USER_NO = #{userNo}
+		AND ROLE_CD = #{roleCd}
+	</delete>
+
+	<select id="queryList_Role"
+		resultType="artxew.framework.layers.role.dto.res.QueryList_Role_ResDto$QueryItem"
+		fetchSize="10">
+		/* queryList_Role */
+		SELECT A.CD AS cd
+			, A.NM AS nm
+		FROM TB_ROLE A
+		ORDER BY A.CD
+	</select>
+
+	<select id="queryListCnt_UserRole"
+		parameterType="QueryList_UserRole_ReqDto"
+		resultType="int">
+		/* queryListCnt_UserRole */
+		SELECT count(*)
+		FROM (
+			SELECT 1
+			FROM TB_USER A
+			LEFT OUTER JOIN TB_USER_ROLE B
+				ON A.SNO = B.USER_NO
+			WHERE A.WDRW_DT IS NULL
+		<if test='userId != null and userId != ""'>
+			AND A.ID = #{userId}
+		</if>
+			GROUP BY A.SNO
+		<if test='roleCd != null and roleCd != ""'>
+			HAVING max(CASE WHEN B.ROLE_CD = #{roleCd} THEN 1 END) > 0
+		</if>
+		) A
+	</select>
+
+	<select id="queryList_UserRole"
+		parameterType="QueryList_UserRole_ReqDto"
+		resultType="artxew.framework.layers.role.dto.res.QueryList_UserRole_ResDto$QueryItem"
+		fetchSize="100">
+		/* queryList_UserRole */
+		SELECT A.SNO AS sno
+			, A.ID AS id
+			, A.NM AS nm
+			, A.BDAY AS bday
+			, A.TEL AS tel
+			, date_format(A.JOIN_DT, '%Y-%m-%d %H:%i') AS joinDt
+			, group_concat(B.ROLE_CD ORDER BY B.ROLE_CD) AS rolesStr
+		FROM TB_USER A
+		LEFT OUTER JOIN TB_USER_ROLE B
+			ON A.SNO = B.USER_NO
+		WHERE A.WDRW_DT IS NULL
+		<if test='userId != null and userId != ""'>
+		AND A.ID = #{userId}
+		</if>
+		GROUP BY A.SNO
+		<if test='roleCd != null and roleCd != ""'>
+		HAVING max(CASE WHEN B.ROLE_CD = #{roleCd} THEN 1 END) > 0
+		</if>
+		ORDER BY A.JOIN_DT DESC
+	</select>
+
+</mapper>

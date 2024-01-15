@@ -1,0 +1,10 @@
+
+     /\         __
+    /  \   _ __| |___  _______      __
+   / /\ \ | '__| __\ \/ / _ \ \ /\ / /
+  / ____ \| |  | |_ >  <  __/\ V  V /
+ /_/    \_\_|   \__/_/\_\___| \_/\_/  v${artxew.version}
+               Powered by Spring Boot v${spring-boot.version}
+                    Active Profiles:[ ${spring.profiles.active} ]
+                         Swagger-UI:[ ${artxew.domain}/swagger-ui/index.html ]
+                       WebSocket-UI:[ ${artxew.domain}/websocket-ui/index.html ]

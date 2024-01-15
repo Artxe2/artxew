@@ -1,0 +1,50 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration
+  banner:
+    location: classpath:banner
+  config:
+    import:
+      - classpath:arguments/environment-arguments.yml
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  session:
+    redis:
+      flush-mode: on-save
+      namespace: artxew
+    timeout: 7200
+  web:
+    resources:
+      chain:
+        enabled: true
+  threads:
+    virtual:
+      enabled: true
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+    bean: stringEncryptor
+logging:
+  config: classpath:config/logback/logback-config.xml
+server:
+  compression:
+    enabled: true
+    mime-types:
+      - application/javascript
+      - application/json
+      - text/css
+      - text/html
+      - text/javascript
+      - text/plain
+      - text/xml
+  error:
+    whitelabel:
+      enabled: false
+  tomcat:
+    keep-alive-timeout: -1
+springdoc:
+  use-fqn: true

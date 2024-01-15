@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artxew.framework.layers.auth">
+
+	<update id="block_User"
+		parameterType="long">
+		/* block_User */
+		UPDATE TB_USER A
+			INNER JOIN TB_USER B
+				ON A.DI = B.DI SET
+			B.BLCK_DT = current_timestamp()
+		WHERE A.SNO = #{value}
+	</update>
+
+	<select id="checkBlocked_User"
+		parameterType="long"
+		resultType="int">
+		/* checkBlocked_User */
+		SELECT EXISTS (
+			SELECT * FROM TB_USER A
+			INNER JOIN TB_USER B
+				ON A.DI = B.DI
+			WHERE A.BLCK_DT IS NOT NULL
+			AND A.SNO = #{value}
+		)
+	</select>
+
+	<select id="checkExists_User"
+		parameterType="java.lang.String"
+		resultType="int">
+		/* checkExists_User */
+		SELECT EXISTS (
+			SELECT * FROM TB_USER A
+			WHERE A.WDRW_DT IS NULL
+			AND A.DI = #{value}
+		)
+	</select>
+
+	<select id="check_PwdChgHst"
+		parameterType="long"
+		resultType="java.lang.String"
+		fetchSize="10">
+		/* check_PwdChgHst */
+		SELECT A.PWD
+		FROM TB_PWD_CHG_HST A
+		WHERE A.USER_NO = #{value}
+	</select>
+
+	<select id="checkWithdrawal_User"
+		parameterType="java.lang.String"
+		resultType="int">
+		/* checkWithdrawal_User */
+		SELECT EXISTS (
+			SELECT * FROM TB_USER A
+			WHERE A.WDRW_DT + INTERVAL 1 YEAR > current_timestamp()
+			AND A.DI = #{value}
+		)
+	</select>
+
+	<insert id="create_LginHst"
+		parameterType="SignIn_User_ReqDto">
+		/* create_LginHst:SECRET */
+		INSERT INTO TB_LGIN_HST (
+			USER_NO
+			, IP
+		) VALUES (
+			#{sno}
+			, #{ip}
+		)
+	</insert>
+
+	<insert id="create_PwdChgHst"
+		parameterType="SignUp_User_ReqDto">
+		/* create_PwdChgHst:SECRET */
+		INSERT INTO TB_PWD_CHG_HST (
+			USER_NO
+			, PWD
+		) VALUES (
+			#{sno}
+			, #{pwd}
+		)
+	</insert>
+
+	<update id="incrementPwdErrCnt_User"
+		parameterType="long">
+		/* incrementPwdErrCnt_User */
+		UPDATE TB_USER A SET
+			PWD_ERR_CNT = A.PWD_ERR_CNT + 1
+		WHERE A.SNO = #{value}
+	</update>
+
+	<update id="modify_User"
+		parameterType="Modify_User_ReqDto">
+		/* modify_User:SECRET */
+		UPDATE TB_USER A SET
+			A.ID = #{id}
+		<if test='pwd != null and pwd != ""'>
+			, A.PWD = #{pwd}
+		</if>
+		<if test='ci != null and ci != ""'>
+			, A.CI = #{ci}
+			, A.DI = #{di}
+			, A.NM = #{nm}
+			, A.BDAY = #{bday}
+			, A.TEL = #{tel}
+			, A.GNDR_CD = #{gndrCd}
+			, A.FRGN_YN = #{frgnYn}
+		</if>
+			, A.MAIL = #{mail}
+			, A.POST = #{post}
+			, A.HOME_ADDR = #{homeAddr}
+			, A.DTL_ADDR = #{dtlAddr}
+		WHERE A.WDRW_DT IS NULL
+		AND A.SNO = #{sno}
+	</update>
+
+	<select id="queryIdExists_User"
+		parameterType="java.lang.String"
+		resultType="QueryIdExists_User_ResDto">
+		/* queryIdExists_User */
+		SELECT #{value} AS userId
+			, CASE
+				WHEN EXISTS (
+					SELECT * FROM TB_USER A
+					WHERE A.ID = #{value}
+				) THEN 'Y'
+				ELSE 'N'
+			END AS exstYn
+	</select>
+
+	<select id="queryIdList_User"
+		parameterType="java.lang.String"
+		resultType="java.lang.String">
+		/* queryIdList_User:SECRET */
+		SELECT A.ID
+		FROM TB_USER A
+		WHERE A.DI = #{value}
+	</select>
+
+	<update id="resetPwdErrCnt_User"
+		parameterType="long">
+		/* resetPwdErrCnt_User */
+		UPDATE TB_USER A SET
+			A.PWD_ERR_CNT = 0
+		WHERE A.SNO = #{value}
+	</update>
+
+	<update id="resetPwd_User"
+		parameterType="ResetPwd_ReqDto">
+		/* resetPwd_User */
+		UPDATE TB_USER A SET
+			A.PWD = #{pwd}
+			, A.TEMP_PWD = NULL
+		WHERE A.SNO = #{sno}
+		AND A.TEMP_PWD = #{tempPwd}
+	</update>
+
+	<update id="setTempPwd_User"
+		parameterType="SetTempPwd_User_ReqDto">
+		<selectKey keyColumn="sno,mail" keyProperty="sno,mail" order="AFTER" resultType="SetTempPwd_User_ReqDto">
+			SELECT A.SNO AS sno
+				, A.MAIL AS mail
+			FROM TB_USER A
+			WHERE A.ID = #{id}
+		</selectKey>
+		/* setTempPwd_User */
+		UPDATE TB_USER A SET
+			A.TEMP_PWD = #{tempPwd}
+		WHERE A.ID = #{id}
+		AND A.CI = #{ci}
+	</update>
+
+	<select id="signIn_User"
+		parameterType="java.lang.String"
+		resultType="SignIn_User_ResDto">
+		/* signIn_User:SECRET */
+		SELECT A.SNO AS sno
+			, A.ID AS id
+			, A.PWD AS pwd
+			, A.NM AS nm
+			, PWD_ERR_CNT AS err
+			, (
+				SELECT group_concat(Z.ROLE_CD ORDER BY Z.ROLE_CD)
+				FROM TB_USER_ROLE Z
+				WHERE Z.USER_NO = A.SNO
+			) AS rolesStr
+			, BLCK_DT IS NOT NULL AS blck
+			, A.TEL AS tel
+		FROM TB_USER A
+		WHERE A.WDRW_DT IS NULL
+		AND A.ID = #{value}
+	</select>
+
+	<insert id="signUp_User"
+		parameterType="SignUp_User_ReqDto">
+		<selectKey resultType="long" keyProperty="sno" order="AFTER">
+			SELECT last_insert_id() AS sno
+		</selectKey>
+		/* signUp_User:SECRET */
+		INSERT INTO TB_USER (
+			ID
+			, PWD
+			, CI
+			, DI
+			, NM
+			, BDAY
+			, TEL
+			, GNDR_CD
+			, FRGN_YN
+			, MAIL
+			, POST
+			, HOME_ADDR
+			, DTL_ADDR
+			, FRST_JOIN_DT
+			, WDRW_DT
+		) VALUES (
+			#{id}
+			, #{pwd}
+			, #{ci}
+			, #{di}
+			, #{nm}
+			, #{bday}
+			, #{tel}
+			, #{gndrCd}
+			, #{frgnYn}
+			, #{mail}
+			, #{post}
+			, #{homeAddr}
+			, #{dtlAddr}
+			, ifnull(
+				(
+					SELECT max(A.FRST_JOIN_DT)
+					FROM TB_USER A
+					WHERE A.CI = #{ci}
+				)
+				, current_timestamp()
+			)
+			, (
+				SELECT max(A.BLCK_DT)
+				FROM TB_USER A
+				WHERE A.CI = #{ci}
+			)
+		)
+	</insert>
+
+	<update id="unblock_User"
+		parameterType="long">
+		/* unblock_User */
+		UPDATE TB_USER A
+			INNER JOIN TB_USER B
+				ON A.DI = B.DI SET
+			B.BLCK_DT = NULL
+		WHERE A.SNO = #{value}
+	</update>
+
+	<update id="withdrawal_User"
+		parameterType="Withdrawal_User_ReqDto">
+		/* withdrawal_User:SECRET */
+		UPDATE TB_USER A SET
+			WDRW_DT = current_timestamp()
+			, WDRW_RSN = #{wdrwRsn}
+		WHERE A.SNO = #{sno}
+		AND A.CI = #{ci}
+	</update>
+
+</mapper>

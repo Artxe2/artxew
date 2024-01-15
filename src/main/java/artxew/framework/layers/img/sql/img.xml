@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artxew.framework.layers.img">
+
+	<insert id="create_Img"
+		parameterType="CreateOfModify_Img_ReqDto">
+		/* create_Img */
+		INSERT INTO tb_img (
+			CL_CD
+			, REF_KEY
+			, ALT
+			, EXTS
+		) VALUES (
+			#{clCd}
+			, #{refKey}
+			, #{alt}
+			, #{exts}
+		)
+	</insert>
+
+	<update id="modify_Img"
+		parameterType="CreateOfModify_Img_ReqDto">
+		/* modify_Img */
+		UPDATE tb_img A SET
+			A.REF_KEY = #{refKey}
+			, A.ALT = #{alt}
+			, A.EXTS = #{exts}
+		WHERE A.CL_CD = #{clCd}
+		AND A.REF_KEY = #{refKey}
+	</update>
+
+	<update id="move_Img"
+		parameterType="Move_Img_ReqDto">
+		/* move_Img */
+		UPDATE TB_IMG_PATH A SET
+			A.REF_KEY = #{moveKey}
+		WHERE A.IMG_CL_CD = #{imgClCd}
+		AND A.REF_KEY = #{refKey}
+	</update>
+
+	<select id="query_Img"
+		parameterType="CreateOfModify_Img_ReqDto"
+		resultType="Query_Img_ResDto">
+		/* query_Img */
+		SELECT A.CL_CD AS clCd
+			, A.REF_KEY AS refKey
+			, A.ALT AS alt
+			, A.EXTS AS exts
+		FROM tb_img A
+		WHERE A.CL_CD = #{clCd}
+		AND A.REF_KEY = #{refKey}
+	</select>
+
+</mapper>

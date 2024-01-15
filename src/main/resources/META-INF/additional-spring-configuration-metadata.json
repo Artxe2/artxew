@@ -1,0 +1,27 @@
+{
+	"properties": [{
+		"description": "JDBC URL of the database.",
+		"name": "spring.datasource-command.jdbc-url",
+		"type": "java.lang.String"
+	}, {
+		"description": "Login username of the database.",
+		"name": "spring.datasource-command.username",
+		"type": "java.lang.String"
+	}, {
+		"description": "Login password of the database.",
+		"name": "spring.datasource-command.password",
+		"type": "java.lang.String"
+	}, {
+		"description": "JDBC URL of the database.",
+		"name": "spring.datasource-query.jdbc-url",
+		"type": "java.lang.String"
+	}, {
+		"description": "Login username of the database.",
+		"name": "spring.datasource-query.username",
+		"type": "java.lang.String"
+	}, {
+		"description": "Login password of the database.",
+		"name": "spring.datasource-query.password",
+		"type": "java.lang.String"
+	}]
+}
