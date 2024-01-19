@@ -26,7 +26,7 @@ public class JasyptTest {
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 		encryptor.setAlgorithm("PBEWithMD5AndDES");
 		encryptor.setPassword("artxew-enc-key");
-		for (var text : new String[] { "24mGhCzihhLucu2nF3bJbf1694xXUrbb)" }) {
+		for (var text : new String[] { "BzGkjzJWrAXWdLFcNQS7Bg==" }) {
 			decryptAndLogging(encryptor, text);
 		}
 		TestUtil.verify(true);
